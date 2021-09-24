@@ -46,6 +46,20 @@ uploadSecretsFromFile()
     done <"$secretfile"
 }
 
+deleteSecretsFromFile()
+{
+    GH_ORG_REPO=$1
+    secretfile=$2
+    if [[ ! $GITHUB_TOKEN ]]; then echo "Must export a valid GITHUB_TOKEN to run this script."; exit 1; fi
+    echo "In github.com/${GH_ORG_REPO}, delete:"
+    while read -r myVAR;
+    do
+        myVAR=${myVAR% *}
+        echo "* $myVAR"
+        podman run --rm --entrypoint /delete.sh github-secrets-generator "${GITHUB_TOKEN}" "${GH_ORG_REPO}" "${myVAR}"
+    done <"$secretfile"
+}
+
 usage () {
     echo "
 To build the github-secrets-generator container (requires podman or docker):
@@ -73,8 +87,16 @@ Plaintext secret file format: one entry per line, key-value separated by a space
 
 KEY1_NAME VALUE1
 KEY2_NAME VALUE2
-  ...
 
+To delete 1 or more secrets from a file (one per line):
+
+Usage: $0 -r [GH org/project] -d -f [SECRET_FILE]
+Example: $0 -r eclipse-che/che-dashboard -d -f mykeys.txt
+
+Plaintext secret file format: one entry per line
+
+SECRET_NAME1
+SECRET_NAME2
 "
     exit 1
 }
@@ -82,12 +104,14 @@ KEY2_NAME VALUE2
 if [[ $# -lt 1 ]]; then usage; exit; fi
 
 DO_BUILD=0
+DO_DELETE=0
 REPO=""
 SECRETFILE=""
 SECRET_TO_CHECK=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--build') DO_BUILD=1; shift 1;; 
+    '-d') DO_DELETE=1; shift 1;;
     '-r') REPO="$2"; shift 1;; 
     '-f') SECRETFILE="$2"; shift 1;; 
     *) SECRET_TO_CHECK="$1"; shift 1;; 
@@ -99,7 +123,9 @@ if [[ $DO_BUILD -eq 1 ]]; then build_container; fi
 
 if [[ ! $REPO ]] && [[ $DO_BUILD -eq 0 ]]; then usage; exit; fi
 
-if [[ $SECRETFILE ]]; then
+if [[ $DO_DELETE -eq 1 ]]; then
+    deleteSecretsFromFile $REPO $SECRETFILE
+elif [[ $SECRETFILE ]]; then
     uploadSecretsFromFile $REPO $SECRETFILE
 elif [[ $SECRET_TO_CHECK ]]; then
     checkIfSecretExists $REPO $SECRET_TO_CHECK
