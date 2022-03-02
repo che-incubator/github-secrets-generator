@@ -1,0 +1,24 @@
+schemaVersion: 2.1.0
+metadata:
+  name: github-secrets-generator
+components:
+  - name: udi
+    container:
+      image: quay.io/crw/udi-rhel8:next
+      volumeMounts:
+        - name: venv
+          path: /home/user/.venv
+      memoryLimit: 2G
+      mountSources: true
+  - name: venv
+    volume:
+      size: 1G
+commands:
+  - id: run
+    exec:
+      label: "Build the container image"
+      component: udi
+      workingDir: ${PROJECTS_ROOT}/github-secrets-generator
+      commandLine: ./run.sh --build
+      group:
+        kind: run
