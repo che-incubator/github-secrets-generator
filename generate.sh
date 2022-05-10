@@ -39,10 +39,10 @@ if [ "${ENCODED_SECONDSECRET}" ]; then
 fi
 
 echo -n "Number of secrets [after]: "
-curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets | jq '.total_count'
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets | jq -r '.total_count'
 echo "New secrets:"
-curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets/${FIRST_VAR} | jq
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets/${FIRST_VAR} | jq -r '.'
 if [ "${ENCODED_SECONDSECRET}" ]; then
-    curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets/${SECOND_VAR} | jq
+    curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${GITHUB_REPO}/actions/secrets/${SECOND_VAR} | jq -r '.'
 fi
 echo ""
