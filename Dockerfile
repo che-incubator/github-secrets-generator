@@ -1,10 +1,10 @@
-FROM registry.access.redhat.com/ubi8-minimal:8.5
+FROM registry.access.redhat.com/ubi8-minimal:latest
 RUN microdnf install -y bash dnf jq glibc-devel libffi-devel make curl && \
-    dnf -y -q module reset python38 && \
-    dnf -y -q module enable python38:3.8 && \
-    dnf -y -q install python38 python38-devel python38-setuptools python38-pip && \
-    ln -s /usr/bin/pip3.8 /usr/bin/pip && \
-    ln -s /usr/bin/python3.8 /usr/bin/python && \
+    dnf -y -q module reset python39 && \
+    dnf -y -q module enable python39:3.9 && \
+    dnf -y -q install python39 python39-devel python39-setuptools python39-pip && \
+    ln -s /usr/bin/pip3.9 /usr/bin/pip && \
+    ln -s /usr/bin/python3.9 /usr/bin/python && \
     /usr/bin/pip install pynacl
 # also include checkIfSecretExists.sh but don't use it by default (optional entrypoint)
 COPY delete.* checkIfSecretExists.* generate.* /
