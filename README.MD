@@ -1,7 +1,7 @@
 # Github Secrets generator
 
 Sets check if a secret is defined in a given github repo, or upload 1 or more secrets to a github repo.
-
+ 
 ### Usage
 
 1. build the image
